@@ -1,0 +1,18 @@
+####{BSB GENERATED: NO EDIT
+FLG -ppx '/Users/dsiu/code/playground/881903-live-url/node_modules/rescript/darwin/bsc.exe -as-ppx '
+S /Users/dsiu/code/playground/881903-live-url/node_modules/rescript/lib/ocaml
+B /Users/dsiu/code/playground/881903-live-url/node_modules/rescript/lib/ocaml
+FLG -w +a-4-9-20-40-41-42-50-61-102
+S /Users/dsiu/code/playground/881903-live-url/node_modules/@ryyppy/rescript-promise/lib/ocaml
+B /Users/dsiu/code/playground/881903-live-url/node_modules/@ryyppy/rescript-promise/lib/ocaml
+S /Users/dsiu/code/playground/881903-live-url/node_modules/rescript-js/lib/ocaml
+B /Users/dsiu/code/playground/881903-live-url/node_modules/rescript-js/lib/ocaml
+S /Users/dsiu/code/playground/881903-live-url/node_modules/rescript-jzon/lib/ocaml
+B /Users/dsiu/code/playground/881903-live-url/node_modules/rescript-jzon/lib/ocaml
+S /Users/dsiu/code/playground/881903-live-url/node_modules/@nobleai/rescript-cypress/lib/ocaml
+B /Users/dsiu/code/playground/881903-live-url/node_modules/@nobleai/rescript-cypress/lib/ocaml
+S /Users/dsiu/code/playground/881903-live-url/node_modules/rescript-test/lib/ocaml
+B /Users/dsiu/code/playground/881903-live-url/node_modules/rescript-test/lib/ocaml
+S cypress/integration/LiveUrl
+B lib/bs/cypress/integration/LiveUrl
+####BSB GENERATED: NO EDIT}

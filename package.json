@@ -1,0 +1,38 @@
+{
+  "name": "881903-live-url",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rescript",
+    "clean": "rescript clean -with-deps",
+    "start": "rescript build -w",
+    "reformat": "./scripts/reformat.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dsiu/881903-live-url.git"
+  },
+  "keywords": [
+    "rescript"
+  ],
+  "author": "Danny Siu <danny.siu@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dsiu/881903-live-url/issues"
+  },
+  "homepage": "https://github.com/dsiu/881903-live-url#readme",
+  "devDependencies": {
+    "@glennsl/bs-jest": "*",
+    "cypress-xpath": "^1.6.2",
+    "jest": "^27.0.6",
+    "rescript-test": "^3.1.0"
+  },
+  "dependencies": {
+    "@nobleai/rescript-cypress": "*",
+    "@ryyppy/rescript-promise": "*",
+    "rescript": "*",
+    "rescript-js": "*",
+    "rescript-jzon": "*"
+  }
+}

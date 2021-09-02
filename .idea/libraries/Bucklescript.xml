@@ -1,0 +1,20 @@
+<component name="libraryTable">
+  <library name="Bucklescript" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/node_modules/@nobleai/rescript-cypress" />
+        <item url="file://$PROJECT_DIR$/node_modules/@ryyppy/rescript-promise" />
+        <item url="file://$PROJECT_DIR$/node_modules/rescript-js" />
+        <item url="file://$PROJECT_DIR$/node_modules/rescript-jzon" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/node_modules/@nobleai/rescript-cypress" />
+      <root url="file://$PROJECT_DIR$/node_modules/@ryyppy/rescript-promise" />
+      <root url="file://$PROJECT_DIR$/node_modules/rescript-js" />
+      <root url="file://$PROJECT_DIR$/node_modules/rescript-jzon" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
