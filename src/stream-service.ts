@@ -97,7 +97,7 @@ export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResul
       { timeout: 15000 }
     );
 
-    await page.goto(liveUrl, { waitUntil: "networkidle" });
+    await page.goto(liveUrl, { waitUntil: "networkidle", timeout: 45000 });
 
     try {
       const m3u8Response = await m3u8ResponsePromise;
