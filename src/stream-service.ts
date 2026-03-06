@@ -1,4 +1,4 @@
-import { launchChromium } from "./browser.js";
+import { chromium } from "playwright";
 import { extractLiveJsUrl, extractM3u8Url, LIVE_URLS, type Channel } from "./stream-utils.js";
 
 export type StreamFetchResult = {
@@ -6,7 +6,7 @@ export type StreamFetchResult = {
   fetchedAtMs: number;
 };
 
-const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: string) => {
+const fetchPlaylistJs = async (page: import("playwright").Page, liveUrl: string) => {
   const html = await page.content();
   const liveJsUrl = extractLiveJsUrl(html);
 
@@ -35,7 +35,7 @@ const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: st
 
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
   const liveUrl = LIVE_URLS[channel];
-  const browser = await launchChromium();
+  const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 
   try {
@@ -48,7 +48,7 @@ export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResul
       { timeout: 15000 }
     );
 
-    await page.goto(liveUrl, { waitUntil: "networkidle", timeout: 45000 });
+    await page.goto(liveUrl, { waitUntil: "networkidle" });
 
     try {
       const m3u8Response = await m3u8ResponsePromise;
@@ -60,8 +60,7 @@ export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResul
       // Fall back to playlist.js parsing below.
     }
 
-    let playlistJs: string | null = null;
-
+    let playlistJs = "";
     try {
       const playlistResponse = await playlistResponsePromise;
       playlistJs = await playlistResponse.text();
