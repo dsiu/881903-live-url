@@ -5,8 +5,10 @@ Guidance for automated agents working in this repo.
 ## Stack
 - Runtime: Bun
 - Language: TypeScript (ESM)
-- Browser automation: Playwright
+- Browser automation: Playwright (CLI uses full `playwright`; server uses `playwright-core` + `@sparticuz/chromium` for Vercel)
 - CLI entry: `./src/get-stream-url.ts`
+- Server entry (local): `./src/server.ts`
+- Serverless entry (Vercel): `./api/index.ts`
 
 ## Commands
 
@@ -20,27 +22,28 @@ Guidance for automated agents working in this repo.
 - Play stream (ffplay): `bun run ./src/get-stream-url.ts --play`
 - Help: `bun run ./src/get-stream-url.ts --help`
 
-### Scripts (package.json)
-- `bun run stream-url` (runs the CLI)
+### Run Server
+- Local dev server: `bun run server`
 
-### Skills
+### Lint / Typecheck
+- TypeScript lint (typecheck): `bun run lint:ts`
 
-Skills are installed via the OpenCode skill system. This repo uses a `skills-lock.json` file that records the installed skills and their source.
+### Tests
+- No test suite is configured.
+- If you add tests, also add a single-test command here.
 
-To install skills:
+## Agents and Skills
 
-1. Run the skill installer (example):
+This repo uses OpenCode agents and skills for automation.
+
+- Skills are installed under `.agents/skills/` and tracked in `skills-lock.json`.
+- Keep `skills-lock.json` committed; do not commit `.agents/`.
+
+To install skills (example):
+
+1. Run:
    - `npx skills add vercel-labs/agent-browser --skill agent-browser`
 2. Verify `skills-lock.json` is updated.
-
-Notes:
-
-- Installed skills are stored under `.agents/skills/`.
-- Keep `skills-lock.json` committed so CI and teammates can reproduce the setup.
-
-### Build / Lint / Test
-- No build/lint/test scripts are configured.
-- If adding tests, keep them runnable via Bun and document single-test usage here.
 
 ## Code Style
 
@@ -48,43 +51,50 @@ Notes:
 - Use ESM `import` syntax.
 - Keep imports at top of file.
 - Prefer named imports from libraries (e.g., `import { chromium } from "playwright"`).
+- Type-only imports should use `import type`.
 
 ### Formatting
 - 2-space indentation.
 - Double quotes for strings.
+- Use template literals only when interpolation is needed.
 - Trailing commas only when they aid readability (match existing style).
 
 ### Types
 - Prefer explicit types for function parameters and return values when helpful.
-- Keep types simple; avoid over-engineering for this small CLI.
+- Keep types simple; avoid over-engineering for this small codebase.
 - Use `Record<string, T>` for simple maps.
 
 ### Naming
-- Use `camelCase` for functions/variables.
-- Use `UPPER_SNAKE_CASE` for constants.
+- `camelCase` for functions/variables.
+- `UPPER_SNAKE_CASE` for constants.
 - Use clear, descriptive names (e.g., `extractM3u8Url`).
 
 ### Error Handling
-- Fail fast with clear error messages via `fail()`.
+- Fail fast with clear error messages via `fail()` in CLI code.
 - Use early returns to keep control flow simple.
 - Use `try/finally` to ensure Playwright browser closes.
+- For server handlers, return JSON errors with status 500.
 
 ### CLI Behavior
-- Defaults: channel 903 if `--channel` is not provided.
-- Validate inputs and return a non-zero exit code on failure.
+- Default channel is 903 if `--channel` is not provided.
+- Validate inputs and exit non-zero on failure.
 - Keep output minimal and machine-readable (`--json` mode).
 
 ### Networking / Playwright
-- Use `waitForResponse` for `.m3u8` and `playlist.js` capture.
-- If `.m3u8` not captured, fall back to parsing `playlist.js`.
+- Prefer `waitForResponse` to capture `.m3u8` and `playlist.js`.
+- If `.m3u8` is not captured, fall back to parsing `playlist.js`.
 - Always set `Referer` and `User-Agent` when requesting `playlist.js`.
 
 ### Streaming Playback
-- Use `ffplay` only (VLC is unsupported in this repo).
+- Use `ffplay` only (VLC unsupported).
 - Pass `Referer` and `Cookie` headers to avoid 403 errors.
 
+### Caching
+- Server caches stream URLs for 10 minutes.
+- Avoid spawning multiple browsers by honoring the inflight cache.
+
 ## Repo Notes
-- Stream URLs are tokenized and expire; always fetch a fresh URL.
+- Stream URLs are tokenized and expire; always fetch a fresh URL when cache is stale.
 - Add new channels by extending `LIVE_URLS` and updating help text.
 
 ## Cursor / Copilot Rules

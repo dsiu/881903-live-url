@@ -109,3 +109,14 @@ dist
 
 # TernJS port file
 .tern-port
+.todos/
+.sidecar/
+.sidecar-agent
+.sidecar-task
+.sidecar-pr
+.sidecar-start.sh
+.sidecar-base
+.td-root
+.idea/
+.DS_Store
+.agents/
