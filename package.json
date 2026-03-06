@@ -12,7 +12,7 @@
     "lint:ts": "tsc --noEmit"
   },
   "dependencies": {
-    "@sparticuz/chromium": "^119.0.2",
+    "@sparticuz/chromium": "^143.0.4",
     "playwright-core": "^1.52.0"
   },
   "devDependencies": {
