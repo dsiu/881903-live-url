@@ -96,15 +96,6 @@ const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: st
 };
 
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
-  const isVercel = isVercelRuntime();
-  console.log("[fetchStreamUrl] isVercel:", isVercel, "VERCEL env:", process.env.VERCEL, "AWS_REGION env:", process.env.AWS_REGION);
-
-  if (isVercel) {
-    console.log("[fetchStreamUrl] Using HTTP fetch for Vercel runtime");
-    return fetchStreamUrlViaHttp(channel);
-  }
-
-  console.log("[fetchStreamUrl] Using browser automation");
   const liveUrl = LIVE_URLS[channel];
   const browser = await launchChromium();
   const page = await browser.newPage();
