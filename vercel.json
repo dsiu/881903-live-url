@@ -1,7 +1,8 @@
 {
   "functions": {
     "api/**/*.ts": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "src/**"
     }
   },
   "rewrites": [
