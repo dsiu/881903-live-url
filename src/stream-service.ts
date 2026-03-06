@@ -87,12 +87,7 @@ const isVercelRuntime = () => {
 };
 
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
-  // Use HTTP on Vercel, browser on local
-  const isVercel = isVercelRuntime();
-  console.log("[fetchStreamUrl] isVercel:", isVercel, "VERCEL:", process.env.VERCEL, "VERCEL_URL:", process.env.VERCEL_URL);
-
-  if (isVercel) {
-    console.log("[fetchStreamUrl] Using HTTP fetch");
+  if (isVercelRuntime()) {
     return fetchStreamUrlViaHttp(channel);
   }
 
