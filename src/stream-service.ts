@@ -69,14 +69,20 @@ export type StreamFetchResult = {
 };
 
 const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: string) => {
+  console.log("[fetchPlaylistJs] Starting");
   const html = await page.content();
   const liveJsUrl = extractLiveJsUrl(html);
 
   if (!liveJsUrl) {
+    console.error("[fetchPlaylistJs] Could not extract liveJsUrl from HTML. HTML length:", html.length);
     throw new Error("Failed to find liveJsUrl in page HTML.");
   }
 
+  console.log("[fetchPlaylistJs] liveJsUrl:", liveJsUrl);
+
   const userAgent = await page.evaluate(() => navigator.userAgent);
+  console.log("[fetchPlaylistJs] Fetching with User-Agent:", userAgent);
+
   const response = await page.request.get(liveJsUrl, {
     headers: {
       Referer: liveUrl,
@@ -88,6 +94,8 @@ const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: st
     }
   });
 
+  console.log("[fetchPlaylistJs] Response status:", response.status());
+
   if (!response.ok()) {
     throw new Error(`Failed to fetch playlist.js (${response.status()}).`);
   }
@@ -97,8 +105,13 @@ const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: st
 
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
   const liveUrl = LIVE_URLS[channel];
+  console.log("[fetchStreamUrl] Starting for channel", channel, "url:", liveUrl);
+
   const browser = await launchChromium();
+  console.log("[fetchStreamUrl] Browser launched");
+
   const page = await browser.newPage();
+  console.log("[fetchStreamUrl] Page created");
 
   try {
     const playlistResponsePromise = page.waitForResponse(
@@ -110,24 +123,29 @@ export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResul
       { timeout: 15000 }
     );
 
+    console.log("[fetchStreamUrl] Navigating to", liveUrl);
     await page.goto(liveUrl, { waitUntil: "networkidle" });
+    console.log("[fetchStreamUrl] Navigation complete");
 
     try {
       const m3u8Response = await m3u8ResponsePromise;
+      console.log("[fetchStreamUrl] Got m3u8 response");
       return {
         url: m3u8Response.url(),
         fetchedAtMs: Date.now()
       };
-    } catch {
-      // Fall back to playlist.js parsing below.
+    } catch (e) {
+      console.log("[fetchStreamUrl] m3u8 response timeout, falling back");
     }
 
     let playlistJs: string | null = null;
 
     try {
       const playlistResponse = await playlistResponsePromise;
+      console.log("[fetchStreamUrl] Got playlist response");
       playlistJs = await playlistResponse.text();
-    } catch {
+    } catch (e) {
+      console.log("[fetchStreamUrl] Playlist response timeout, fetching directly");
       playlistJs = await fetchPlaylistJs(page, liveUrl);
     }
 
@@ -136,6 +154,7 @@ export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResul
       throw new Error("Failed to extract .m3u8 URL from playlist.js.");
     }
 
+    console.log("[fetchStreamUrl] Success!");
     return {
       url: m3u8Url,
       fetchedAtMs: Date.now()
