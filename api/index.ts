@@ -33,7 +33,10 @@ const sendRedirect = (res: VercelResponse, location: string) => {
   res.end();
 };
 
-const parseChannel = (pathname: string): Channel | null => {
+const parseChannel = (pathname: string, queryChannel?: string | null): Channel | null => {
+  if (queryChannel === "903" || queryChannel === "881") {
+    return queryChannel as Channel;
+  }
   const match = pathname.match(/^\/(?:api\/)?live\/(903|881)$/);
   return match ? (match[1] as Channel) : null;
 };
@@ -94,7 +97,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const channel = parseChannel(url.pathname);
+  const channel = parseChannel(url.pathname, url.searchParams.get("channel"));
   if (channel) {
     try {
       await handleLiveRoute(req, res, channel);
