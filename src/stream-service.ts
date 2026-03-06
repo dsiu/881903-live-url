@@ -36,14 +36,10 @@ const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResul
   const playlistResponse = await fetch(liveJsUrl, {
     headers: {
       Accept: "*/*",
-      Referer: liveUrl,
-      Origin: "https://www.881903.com",
-      "User-Agent": DEFAULT_USER_AGENT,
-      "Sec-Fetch-Dest": "script",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "same-site",
       "Accept-Encoding": "gzip, deflate, br",
-      "Accept-Language": "en-US,en;q=0.9"
+      "Accept-Language": "en-US,en;q=0.9",
+      Referer: liveUrl,
+      "User-Agent": DEFAULT_USER_AGENT
     }
   });
 
