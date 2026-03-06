@@ -1,4 +1,3 @@
-import { launchChromium } from "./browser.js";
 import { extractLiveJsUrl, extractM3u8Url, LIVE_URLS, type Channel } from "./stream-utils.js";
 
 const DEFAULT_USER_AGENT =
