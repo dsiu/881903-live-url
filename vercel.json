@@ -13,6 +13,11 @@
     {
       "source": "/live/:channel",
       "destination": "/api/live/:channel"
+    },
+    {
+      "source": "/live/:channel",
+      "has": [{ "type": "query", "key": "format", "value": "json" }],
+      "destination": "/api/live/:channel?format=json"
     }
   ]
 }

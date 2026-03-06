@@ -2,27 +2,39 @@ import { renderHomePage } from "../src/home.js";
 import type { CacheEntry } from "../src/cache.js";
 import type { Channel } from "../src/stream-utils.js";
 
-const htmlResponse = (body: string) => {
-  return new Response(body, {
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "no-store"
-    }
-  });
+type VercelRequest = {
+  method?: string;
+  url?: string;
 };
 
-const jsonResponse = (body: unknown, status = 200) => {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store"
-    }
-  });
+type VercelResponse = {
+  statusCode: number;
+  setHeader: (name: string, value: string) => void;
+  end: (body?: string) => void;
+};
+
+const sendHtml = (res: VercelResponse, body: string) => {
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store");
+  res.end(body);
+};
+
+const sendJson = (res: VercelResponse, body: unknown, status = 200) => {
+  res.statusCode = status;
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store");
+  res.end(JSON.stringify(body));
+};
+
+const sendRedirect = (res: VercelResponse, location: string) => {
+  res.statusCode = 302;
+  res.setHeader("Location", location);
+  res.end();
 };
 
 const parseChannel = (pathname: string): Channel | null => {
-  const match = pathname.match(/^\/api\/live\/(903|881)$/);
+  const match = pathname.match(/^\/(?:api\/)?live\/(903|881)$/);
   return match ? (match[1] as Channel) : null;
 };
 
@@ -35,8 +47,8 @@ const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T
   ]);
 };
 
-const handleLiveRoute = async (request: Request, channel: Channel) => {
-  const url = new URL(request.url, "http://localhost");
+const handleLiveRoute = async (req: VercelRequest, res: VercelResponse, channel: Channel) => {
+  const url = new URL(req.url ?? "/", "http://localhost");
   const format = url.searchParams.get("format");
 
   const { getStreamCache, getStreamCacheEntry, getStreamUrlCached } = await import(
@@ -61,34 +73,38 @@ const handleLiveRoute = async (request: Request, channel: Channel) => {
   }
 
   if (format === "json") {
-    return jsonResponse({
+    sendJson(res, {
       channel,
       url: entry.url,
       cached: entry.cached,
       fetchedAtMs: entry.fetchedAtMs,
       expiresAtMs: entry.expiresAtMs
     });
+    return;
   }
 
-  return Response.redirect(entry.url, 302);
+  sendRedirect(res, entry.url);
 };
 
-export default async function handler(request: Request) {
-  const url = new URL(request.url, "http://localhost");
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const url = new URL(req.url ?? "/", "http://localhost");
 
-  if (url.pathname === "/api") {
-    return htmlResponse(renderHomePage().replace(/\/live\//g, "/api/live/"));
+  if (url.pathname === "/" || url.pathname === "/api") {
+    sendHtml(res, renderHomePage());
+    return;
   }
 
   const channel = parseChannel(url.pathname);
   if (channel) {
     try {
-      return await handleLiveRoute(request, channel);
+      await handleLiveRoute(req, res, channel);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      return jsonResponse({ error: message }, 500);
+      sendJson(res, { error: message }, 500);
     }
+    return;
   }
 
-  return new Response("Not Found", { status: 404 });
+  res.statusCode = 404;
+  res.end("Not Found");
 }
