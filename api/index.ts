@@ -46,7 +46,7 @@ const handleLiveRoute = async (request: Request, channel: Channel) => {
 };
 
 export default async function handler(request: Request) {
-  const url = new URL(request.url);
+  const url = new URL(request.url, "http://localhost");
 
   if (url.pathname === "/api") {
     return htmlResponse(renderHomePage().replace(/\/live\//g, "/api/live/"));
