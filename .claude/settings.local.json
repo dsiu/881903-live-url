@@ -3,7 +3,9 @@
     "allow": [
       "Bash(git:*)",
       "WebFetch(domain:881903-live-url.vercel.app)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(vercel logs:*)",
+      "Bash(vercel list:*)"
     ]
   }
 }
