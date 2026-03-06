@@ -4,7 +4,16 @@ import { extractLiveJsUrl, extractM3u8Url, LIVE_URLS, type Channel } from "./str
 const DEFAULT_USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36";
 
-const isVercelRuntime = () => Boolean(process.env.VERCEL || process.env.AWS_REGION);
+const isVercelRuntime = () => {
+  const detected = !!(
+    process.env.VERCEL ||
+    process.env.VERCEL_ENV ||
+    process.env.VERCEL_URL ||
+    process.env.AWS_REGION
+  );
+  console.log("[isVercelRuntime] VERCEL:", process.env.VERCEL, "VERCEL_URL:", process.env.VERCEL_URL, "detected:", detected);
+  return detected;
+};
 
 const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResult> => {
   const liveUrl = LIVE_URLS[channel];
