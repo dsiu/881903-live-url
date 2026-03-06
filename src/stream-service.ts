@@ -46,7 +46,7 @@ const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResul
       Accept: "*/*",
       "Accept-Encoding": "gzip, deflate, br",
       "Accept-Language": "en-US,en;q=0.9",
-      Referer: liveUrl,
+      Referer: "https://www.881903.com/",
       "User-Agent": DEFAULT_USER_AGENT
     }
   });
