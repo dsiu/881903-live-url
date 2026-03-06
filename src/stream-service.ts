@@ -83,7 +83,7 @@ const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: st
 };
 
 const isVercelRuntime = () => {
-  return !!(process.env.VERCEL || process.env.VERCEL_URL);
+  return !!(process.env.VERCEL || process.env.VERCEL_URL || process.env.AWS_REGION);
 };
 
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
