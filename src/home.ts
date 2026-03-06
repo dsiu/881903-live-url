@@ -1,4 +1,4 @@
-import { LIVE_URLS } from "./stream-utils";
+import { LIVE_URLS } from "./stream-utils.js";
 
 export const renderHomePage = () => {
   const channels = Object.keys(LIVE_URLS).join(", ");
