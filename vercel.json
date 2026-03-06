@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "api/**/*.ts": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api"
+    },
+    {
+      "source": "/live/:channel",
+      "destination": "/api/live/:channel"
+    }
+  ]
+}

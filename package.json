@@ -1,38 +1,23 @@
 {
   "name": "881903-live-url",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "881903-live-url": "./src/get-stream-url.ts"
+  },
   "scripts": {
-    "build": "rescript",
-    "clean": "rescript clean -with-deps",
-    "start": "rescript build -w",
-    "reformat": "./scripts/reformat.sh"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dsiu/881903-live-url.git"
-  },
-  "keywords": [
-    "rescript"
-  ],
-  "author": "Danny Siu <danny.siu@gmail.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dsiu/881903-live-url/issues"
-  },
-  "homepage": "https://github.com/dsiu/881903-live-url#readme",
-  "devDependencies": {
-    "@glennsl/bs-jest": "*",
-    "cypress-xpath": "^1.6.2",
-    "jest": "^27.0.6",
-    "rescript-test": "^3.1.0"
+    "stream-url": "bun run ./src/get-stream-url.ts",
+    "server": "bun run ./src/server.ts",
+    "lint:ts": "tsc --noEmit"
   },
   "dependencies": {
-    "@nobleai/rescript-cypress": "*",
-    "@ryyppy/rescript-promise": "*",
-    "rescript": "*",
-    "rescript-js": "*",
-    "rescript-jzon": "*"
+    "@sparticuz/chromium": "^119.0.2",
+    "playwright-core": "^1.52.0"
+  },
+  "devDependencies": {
+    "bun-types": "^1.3.8",
+    "playwright": "^1.52.0",
+    "typescript": "^5.8.2"
   }
 }
