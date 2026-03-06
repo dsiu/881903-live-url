@@ -11,6 +11,8 @@ const fetchPlaylistJs = async (page: import("playwright").Page, liveUrl: string)
   const liveJsUrl = extractLiveJsUrl(html);
 
   if (!liveJsUrl) {
+    console.error("[fetchPlaylistJs] Failed to extract liveJsUrl. HTML length:", html.length);
+    console.error("[fetchPlaylistJs] HTML snippet:", html.substring(0, 500));
     throw new Error("Failed to find liveJsUrl in page HTML.");
   }
 
@@ -35,6 +37,8 @@ const fetchPlaylistJs = async (page: import("playwright").Page, liveUrl: string)
 
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
   const liveUrl = LIVE_URLS[channel];
+  console.log("[fetchStreamUrl] Starting for channel", channel, "URL:", liveUrl);
+
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
 

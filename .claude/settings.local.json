@@ -8,7 +8,9 @@
       "Bash(vercel list:*)",
       "Bash(bun add:*)",
       "Bash(__NEW_LINE_2c1d1f6bcf8f8a13__ echo:*)",
-      "Bash(bun run:*)"
+      "Bash(bun run:*)",
+      "Bash(__NEW_LINE_a09ffd0da566d3ac__ echo:*)",
+      "Bash(__NEW_LINE_773281dc74fb4f1c__ echo:*)"
     ]
   }
 }
