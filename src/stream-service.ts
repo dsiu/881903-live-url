@@ -96,8 +96,6 @@ export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResul
     return fetchStreamUrlViaHttp(channel);
   }
 
-  console.log("[fetchStreamUrl] Using browser automation");
-
   const liveUrl = LIVE_URLS[channel];
   const browser = await launchChromium();
   const page = await browser.newPage();
