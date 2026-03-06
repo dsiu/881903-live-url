@@ -82,7 +82,16 @@ const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: st
   return response.text();
 };
 
+const isVercelRuntime = () => {
+  return !!(process.env.VERCEL || process.env.VERCEL_URL);
+};
+
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
+  // Use HTTP on Vercel, browser on local
+  if (isVercelRuntime()) {
+    return fetchStreamUrlViaHttp(channel);
+  }
+
   const liveUrl = LIVE_URLS[channel];
   const browser = await launchChromium();
   const page = await browser.newPage();
