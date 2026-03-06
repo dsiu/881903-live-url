@@ -4,21 +4,9 @@ import { extractLiveJsUrl, extractM3u8Url, LIVE_URLS, type Channel } from "./str
 const DEFAULT_USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36";
 
-const isVercelRuntime = () => {
-  const detected = !!(
-    process.env.VERCEL ||
-    process.env.VERCEL_ENV ||
-    process.env.VERCEL_URL ||
-    process.env.AWS_REGION
-  );
-  console.log("[isVercelRuntime] VERCEL:", process.env.VERCEL, "VERCEL_URL:", process.env.VERCEL_URL, "detected:", detected);
-  return detected;
-};
 
 const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResult> => {
   const liveUrl = LIVE_URLS[channel];
-  console.log("[fetchStreamUrlViaHttp] Fetching live page from", liveUrl);
-
   const liveResponse = await fetch(liveUrl, {
     headers: {
       "User-Agent": DEFAULT_USER_AGENT
@@ -30,16 +18,11 @@ const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResul
   }
 
   const html = await liveResponse.text();
-  console.log("[fetchStreamUrlViaHttp] Got HTML, length:", html.length);
-
   const liveJsUrl = extractLiveJsUrl(html);
-  console.log("[fetchStreamUrlViaHttp] Extracted liveJsUrl:", liveJsUrl);
 
   if (!liveJsUrl) {
     throw new Error("Failed to find liveJsUrl in page HTML.");
   }
-
-  console.log("[fetchStreamUrlViaHttp] Fetching playlist from", liveJsUrl);
 
   const playlistResponse = await fetch(liveJsUrl, {
     headers: {
@@ -50,8 +33,6 @@ const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResul
       "User-Agent": DEFAULT_USER_AGENT
     }
   });
-
-  console.log("[fetchStreamUrlViaHttp] Playlist response status:", playlistResponse.status);
 
   if (!playlistResponse.ok) {
     throw new Error(`Failed to fetch playlist.js (${playlistResponse.status}).`);
@@ -102,10 +83,6 @@ const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: st
 };
 
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
-  if (isVercelRuntime()) {
-    return fetchStreamUrlViaHttp(channel);
-  }
-
   const liveUrl = LIVE_URLS[channel];
   const browser = await launchChromium();
   const page = await browser.newPage();
