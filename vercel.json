@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/**/*.ts": {
+    "api/index.ts": {
       "maxDuration": 60,
       "includeFiles": "src/**"
     }
