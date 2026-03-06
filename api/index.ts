@@ -92,22 +92,29 @@ const handleLiveRoute = async (req: VercelRequest, res: VercelResponse, channel:
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const url = new URL(req.url ?? "/", "http://localhost");
 
-  if (url.pathname === "/" || url.pathname === "/api") {
-    sendHtml(res, renderHomePage());
-    return;
-  }
-
   const channel = parseChannel(url.pathname, url.searchParams.get("channel"));
-  if (channel) {
-    try {
-      await handleLiveRoute(req, res, channel);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      sendJson(res, { error: message }, 500);
+
+  if (url.pathname === "/" || url.pathname === "/api") {
+    if (!channel) {
+      sendHtml(res, renderHomePage());
+      return;
     }
+  }
+
+  if (!channel) {
+    if (url.searchParams.get("format") === "json") {
+      sendJson(res, { error: "Missing or invalid channel." }, 400);
+      return;
+    }
+    res.statusCode = 404;
+    res.end("Not Found");
     return;
   }
 
-  res.statusCode = 404;
-  res.end("Not Found");
+  try {
+    await handleLiveRoute(req, res, channel);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    sendJson(res, { error: message }, 500);
+  }
 }
