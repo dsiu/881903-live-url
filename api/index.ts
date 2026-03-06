@@ -1,5 +1,5 @@
-import { getStreamUrlCached } from "../src/cache.js";
 import { renderHomePage } from "../src/home.js";
+import type { CacheEntry } from "../src/cache.js";
 import type { Channel } from "../src/stream-utils.js";
 
 const htmlResponse = (body: string) => {
@@ -26,11 +26,39 @@ const parseChannel = (pathname: string): Channel | null => {
   return match ? (match[1] as Channel) : null;
 };
 
+const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
+  return await Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => reject(new Error("Stream fetch timed out.")), timeoutMs);
+    })
+  ]);
+};
+
 const handleLiveRoute = async (request: Request, channel: Channel) => {
-  const url = new URL(request.url);
+  const url = new URL(request.url, "http://localhost");
   const format = url.searchParams.get("format");
 
-  const entry = await getStreamUrlCached(channel);
+  const { getStreamCache, getStreamCacheEntry, getStreamUrlCached } = await import(
+    "../src/cache.js"
+  );
+  let entry: CacheEntry;
+  const cached = getStreamCache(channel);
+
+  if (cached) {
+    entry = cached;
+  } else {
+    try {
+      entry = await withTimeout(getStreamUrlCached(channel), 20000);
+    } catch (error) {
+      const stale = getStreamCacheEntry(channel);
+      if (stale) {
+        entry = { ...stale, cached: true };
+      } else {
+        throw error;
+      }
+    }
+  }
 
   if (format === "json") {
     return jsonResponse({

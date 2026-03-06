@@ -32,6 +32,10 @@ export const getStreamCache = (channel: Channel): CacheEntry | null => {
   return isFresh(entry) ? { ...entry, cached: true } : null;
 };
 
+export const getStreamCacheEntry = (channel: Channel): CacheEntry | null => {
+  return cache.get(channel) ?? null;
+};
+
 export const getStreamUrlCached = async (channel: Channel): Promise<CacheEntry> => {
   const existing = getStreamCache(channel);
   if (existing) {
