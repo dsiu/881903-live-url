@@ -17,6 +17,8 @@ const isVercelRuntime = () => {
 
 const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResult> => {
   const liveUrl = LIVE_URLS[channel];
+  console.log("[fetchStreamUrlViaHttp] Fetching live page from", liveUrl);
+
   const liveResponse = await fetch(liveUrl, {
     headers: {
       "User-Agent": DEFAULT_USER_AGENT
@@ -28,10 +30,16 @@ const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResul
   }
 
   const html = await liveResponse.text();
+  console.log("[fetchStreamUrlViaHttp] Got HTML, length:", html.length);
+
   const liveJsUrl = extractLiveJsUrl(html);
+  console.log("[fetchStreamUrlViaHttp] Extracted liveJsUrl:", liveJsUrl);
+
   if (!liveJsUrl) {
     throw new Error("Failed to find liveJsUrl in page HTML.");
   }
+
+  console.log("[fetchStreamUrlViaHttp] Fetching playlist from", liveJsUrl);
 
   const playlistResponse = await fetch(liveJsUrl, {
     headers: {
@@ -42,6 +50,8 @@ const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResul
       "User-Agent": DEFAULT_USER_AGENT
     }
   });
+
+  console.log("[fetchStreamUrlViaHttp] Playlist response status:", playlistResponse.status);
 
   if (!playlistResponse.ok) {
     throw new Error(`Failed to fetch playlist.js (${playlistResponse.status}).`);
