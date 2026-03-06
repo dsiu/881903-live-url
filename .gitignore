@@ -120,3 +120,4 @@ dist
 .idea/
 .DS_Store
 .agents/
+.vercel
