@@ -1,6 +1,6 @@
-import { getStreamUrlCached } from "../src/cache";
-import { renderHomePage } from "../src/home";
-import type { Channel } from "../src/stream-utils";
+import { getStreamUrlCached } from "../src/cache.js";
+import { renderHomePage } from "../src/home.js";
+import type { Channel } from "../src/stream-utils.js";
 
 const htmlResponse = (body: string) => {
   return new Response(body, {

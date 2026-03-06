@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
-import { getStreamUrlCached } from "./cache";
-import { type Channel } from "./stream-utils";
-import { renderHomePage } from "./home";
+import { getStreamUrlCached } from "./cache.js";
+import { type Channel } from "./stream-utils.js";
+import { renderHomePage } from "./home.js";
 
 const DEFAULT_PORT = 3000;
 

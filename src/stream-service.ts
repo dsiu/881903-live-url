@@ -1,5 +1,5 @@
-import { launchChromium } from "./browser";
-import { extractLiveJsUrl, extractM3u8Url, LIVE_URLS, type Channel } from "./stream-utils";
+import { launchChromium } from "./browser.js";
+import { extractLiveJsUrl, extractM3u8Url, LIVE_URLS, type Channel } from "./stream-utils.js";
 
 export type StreamFetchResult = {
   url: string;

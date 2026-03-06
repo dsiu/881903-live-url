@@ -1,5 +1,5 @@
-import type { Channel } from "./stream-utils";
-import { fetchStreamUrl, type StreamFetchResult } from "./stream-service";
+import type { Channel } from "./stream-utils.js";
+import { fetchStreamUrl, type StreamFetchResult } from "./stream-service.js";
 
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
