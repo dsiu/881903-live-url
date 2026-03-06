@@ -88,9 +88,15 @@ const isVercelRuntime = () => {
 
 export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResult> => {
   // Use HTTP on Vercel, browser on local
-  if (isVercelRuntime()) {
+  const isVercel = isVercelRuntime();
+  console.log("[fetchStreamUrl] isVercel:", isVercel, "VERCEL:", process.env.VERCEL, "VERCEL_URL:", process.env.VERCEL_URL);
+
+  if (isVercel) {
+    console.log("[fetchStreamUrl] Using HTTP fetch");
     return fetchStreamUrlViaHttp(channel);
   }
+
+  console.log("[fetchStreamUrl] Using browser automation");
 
   const liveUrl = LIVE_URLS[channel];
   const browser = await launchChromium();
