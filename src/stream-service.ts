@@ -31,7 +31,10 @@ const fetchStreamUrlViaHttp = async (channel: Channel): Promise<StreamFetchResul
       headers: {
         Referer: liveUrl,
         Origin: "https://www.881903.com",
-        "User-Agent": DEFAULT_USER_AGENT
+        "User-Agent": DEFAULT_USER_AGENT,
+        "Sec-Fetch-Dest": "script",
+        "Sec-Fetch-Mode": "no-cors",
+        "Sec-Fetch-Site": "same-site"
       }
     });
 
