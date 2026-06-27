@@ -118,7 +118,7 @@ const main = async () => {
       { timeout: 15000 }
     );
 
-    await page.goto(liveUrl, { waitUntil: "networkidle" });
+    await page.goto(liveUrl, { waitUntil: "domcontentloaded" });
 
     try {
       const m3u8Response = await m3u8ResponsePromise;
