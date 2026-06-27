@@ -81,6 +81,7 @@ const handleRequest = async (request: Request) => {
 
 Bun.serve({
   port: getPort(),
+  idleTimeout: 60,
   fetch: handleRequest
 });
 

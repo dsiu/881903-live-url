@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
 import { extractLiveJsUrl, extractM3u8Url, LIVE_URLS, type Channel } from "./stream-utils.js";
 
 export type StreamFetchResult = {
@@ -6,7 +6,55 @@ export type StreamFetchResult = {
   fetchedAtMs: number;
 };
 
-const fetchPlaylistJs = async (page: import("playwright").Page, liveUrl: string) => {
+// Serialize browser launches so concurrent invocations don't race on the
+// shared @sparticuz/chromium binary extraction in /tmp (causes spawn ETXTBSY).
+let launchLock: Promise<unknown> = Promise.resolve();
+
+const launchSerialized = async <T>(fn: () => Promise<T>): Promise<T> => {
+  const run = launchLock.then(fn, fn);
+  launchLock = run.catch(() => {});
+  return run;
+};
+
+const launchVercelChromium = async () => {
+  const { default: sparticuz } = await import("@sparticuz/chromium");
+  const executablePath = await sparticuz.executablePath();
+
+  // Retry on ETXTBSY: the binary may still be flushing to disk on cold start.
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await chromium.launch({
+        args: sparticuz.args,
+        executablePath,
+        headless: true
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (attempt < 3 && message.includes("ETXTBSY")) {
+        await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+        continue;
+      }
+      throw error;
+    }
+  }
+};
+
+const getBrowser = async () => {
+  const wsEndpoint = process.env.BROWSERLESS_WS_ENDPOINT;
+  if (wsEndpoint) {
+    return chromium.connect(wsEndpoint);
+  }
+
+  // On Vercel (serverless), use the bundled @sparticuz/chromium binary.
+  if (process.env.VERCEL) {
+    return launchSerialized(launchVercelChromium);
+  }
+
+  // Local / CLI: rely on the system-installed Playwright Chromium.
+  return chromium.launch({ headless: true });
+};
+
+const fetchPlaylistJs = async (page: import("playwright-core").Page, liveUrl: string) => {
   const html = await page.content();
   const liveJsUrl = extractLiveJsUrl(html);
 
@@ -39,20 +87,20 @@ export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResul
   const liveUrl = LIVE_URLS[channel];
   console.log("[fetchStreamUrl] Starting for channel", channel, "URL:", liveUrl);
 
-  const browser = await chromium.launch({ headless: true });
+  const browser = await getBrowser();
   const page = await browser.newPage();
 
   try {
     const playlistResponsePromise = page.waitForResponse(
       (response) => response.url().includes("playlist.js") && response.ok(),
-      { timeout: 15000 }
+      { timeout: 30000 }
     );
     const m3u8ResponsePromise = page.waitForResponse(
       (response) => response.url().includes(".m3u8") && response.ok(),
-      { timeout: 15000 }
+      { timeout: 30000 }
     );
 
-    await page.goto(liveUrl, { waitUntil: "networkidle" });
+    await page.goto(liveUrl, { waitUntil: "domcontentloaded" });
 
     try {
       const m3u8Response = await m3u8ResponsePromise;
@@ -82,8 +130,6 @@ export const fetchStreamUrl = async (channel: Channel): Promise<StreamFetchResul
       fetchedAtMs: Date.now()
     };
   } finally {
-    if (browser.isConnected()) {
-      await browser.close();
-    }
+    await browser.close();
   }
 };

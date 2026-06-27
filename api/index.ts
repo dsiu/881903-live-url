@@ -64,7 +64,7 @@ const handleLiveRoute = async (req: VercelRequest, res: VercelResponse, channel:
     entry = cached;
   } else {
     try {
-      entry = await withTimeout(getStreamUrlCached(channel), 20000);
+      entry = await withTimeout(getStreamUrlCached(channel), 45000);
     } catch (error) {
       const stale = getStreamCacheEntry(channel);
       if (stale) {
